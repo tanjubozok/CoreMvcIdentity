@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<h1>Login</h1>
+<h1 class="mt-3">Login</h1>
 <hr />
 <div class="row">
 
@@ -15,15 +15,21 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="mb-3">
-                <label asp-for="Email" class="orm-label"></label>
-                <input type="text" asp-for="Email" value="@Model.Email" class="form-control" placeholder="E-posta Adresi" required/>
+                <label asp-for="Email" class="form-label"></label>
+                <input type="text" asp-for="Email" value="@Model.Email" class="form-control" placeholder="E-posta Adresi" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Password" class="orm-label"></label>
-                <input type="password" asp-for="Password" class="form-control" placeholder="Şifre" required/>
+                <label asp-for="Password" class="form-label"></label>
+                <input type="password" asp-for="Password" class="form-control" placeholder="Şifre" required />
                 <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" asp-for="RememberMe">
+                <label class="form-check-label" for="RememberMe">Beni Hatırla</label>
+                <span asp-validation-for="RememberMe" class="text-danger"></span>
             </div>
 
             <button type="submit" class="btn btn-success">Submit</button>

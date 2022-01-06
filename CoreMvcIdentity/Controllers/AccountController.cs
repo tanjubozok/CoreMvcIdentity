@@ -24,8 +24,9 @@ namespace CoreMvcIdentity.Controllers
             return View(userList);
         }
 
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl)
         {
+            TempData["returnUrl"] = returnUrl;
             return View(new LoginModel());
         }
 
@@ -37,10 +38,16 @@ namespace CoreMvcIdentity.Controllers
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Index", "Home");
+                        return TempData["returnUrl"] != null
+                            ? Redirect(TempData["returnUrl"].ToString())
+                            : RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Kullanıcı Adı veyay Şifre hatalıdır.");
                     }
                 }
                 else

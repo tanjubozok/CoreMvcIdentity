@@ -24,22 +24,6 @@ namespace CoreMvcIdentity
         {
             services.AddDbContext<AppIdentityDbContext>(option => option.UseSqlServer(Configuration["ConnectionStrings:IdentityConnection"]));
 
-            // Cookie
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-                options.AccessDeniedPath = "/Account/AccessDenied";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                options.SlidingExpiration = true;
-                options.Cookie = new CookieBuilder
-                {
-                    HttpOnly = true,
-                    Name = ".Identity.Security.Cookie",
-                    SameSite = SameSiteMode.Strict
-                };
-            });
-
             services.AddIdentity<AppUser, AppRole>(options =>
             {
                 // username
@@ -57,6 +41,22 @@ namespace CoreMvcIdentity
               .AddUserValidator<CustomUserValidator>()
               .AddErrorDescriber<CustomIdentityErrorDescriber>()
               .AddEntityFrameworkStores<AppIdentityDbContext>();
+
+            // Cookie
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                options.Cookie = new CookieBuilder
+                {
+                    HttpOnly = true,
+                    Name = ".Identity.Security.Cookie",
+                    SameSite = SameSiteMode.Strict
+                };
+            });
 
             services.AddControllersWithViews();
         }
