@@ -1,0 +1,38 @@
+﻿@model ProfilModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+<h4 class="mb-3">Profil Sayfası</h4>
+
+<form>
+    <div class="row g-3">
+        <div class="col-sm-3 mt-5">
+            <img src="~/images/user/user-logo.png" style="width:70%;" />
+        </div>
+
+        <div class="col-sm-9">
+            <div class="mb-3">
+                <label asp-for="UserName" class="form-label"></label>
+                <input type="text" asp-for="UserName" value="@Model.UserName" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input type="text" asp-for="Email" value="@Model.Email" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label"></label>
+                <input type="text" asp-for="Phone" value="@Model.Phone" class="form-control" readonly />
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+
+

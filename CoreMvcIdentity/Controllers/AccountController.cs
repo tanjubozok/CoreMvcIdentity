@@ -51,9 +51,8 @@ namespace CoreMvcIdentity.Controllers
                         //giriş sayısını sıfırla
                         await _userManager.ResetAccessFailedCountAsync(user);
 
-                        return TempData["returnUrl"] != null
-                            ? Redirect(TempData["returnUrl"].ToString())
-                            : RedirectToAction("Index", "Home");
+                        return RedirectToAction("Profil", "Member");
+                        //return TempData["returnUrl"] != null ? Redirect(TempData["returnUrl"].ToString()) : RedirectToAction("Profil", "Member");
                     }
                     else
                     {

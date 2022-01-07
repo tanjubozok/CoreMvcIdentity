@@ -6,6 +6,10 @@ namespace CoreMvcIdentity.Controllers
     {
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Profil", "Member");
+            }
             return View();
         }
 

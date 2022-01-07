@@ -83,6 +83,7 @@ namespace CoreMvcIdentity
 
             app.UseRouting();
 
+            app.UseAuthentication();//User.Identity.Name
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
