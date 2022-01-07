@@ -78,5 +78,48 @@ namespace CoreMvcIdentity.Controllers
             }
             return View(model);
         }
+
+        public async Task<IActionResult> EditMember()
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var model = new EditMemberModel()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
+                UserName = user.UserName
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditMember(EditMemberModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.Id);
+                user.UserName = model.UserName;
+                user.PhoneNumber = model.Phone;
+                user.Email = model.Email;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    await _userManager.UpdateSecurityStampAsync(user);
+                    await _signInManager.SignOutAsync();
+                    await _signInManager.SignInAsync(user, false);
+
+                    ModelState.AddModelError("", "Güncelleme işlemi başarılı bir şekilde tamamlandı.");
+                }
+                else
+                {
+                    foreach (var item in result.Errors)
+                    {
+                        ModelState.AddModelError("", item.Description);
+                    }
+                }
+            }
+            return View(model);
+        }
     }
 }

@@ -1,0 +1,38 @@
+﻿@model EditMemberModel
+@{
+    ViewData["Title"] = "Edit Member";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+<h1 class="mt-3">Edit Member</h1>
+<hr />
+<div class="row">
+
+    <form asp-controller="Member" asp-action="EditMember" method="post">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="Id" value="@Model.Id" />
+
+        <div class="mb-3">
+            <label asp-for="UserName" class="form-label"></label>
+            <input type="text" asp-for="UserName" value="@Model.UserName" class="form-control" placeholder="Kullanıcı Adı" required />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input type="text" asp-for="Email" value="@Model.Email" class="form-control" placeholder="E-posta Adresi" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label"></label>
+            <input type="text" asp-for="Phone" value="@Model.Phone" class="form-control" placeholder="Telefon NUmarası" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+
+    </form>
+</div>
