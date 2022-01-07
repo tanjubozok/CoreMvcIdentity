@@ -1,8 +1,14 @@
-﻿using CoreMvcIdentity.Identity;
+﻿using CoreMvcIdentity.Enums;
+using CoreMvcIdentity.Identity;
 using CoreMvcIdentity.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoreMvcIdentity.Controllers
@@ -28,7 +34,11 @@ namespace CoreMvcIdentity.Controllers
                 {
                     UserName = user.UserName,
                     Email = user.Email,
-                    Phone = user.PhoneNumber
+                    Phone = user.PhoneNumber,
+                    BirthDay = user.BirthDay,
+                    City = user.City,
+                    Picture = user.Picture,
+                    Gender = (Gender)user.Gender
                 };
                 return View(model);
             }
@@ -87,20 +97,46 @@ namespace CoreMvcIdentity.Controllers
                 Id = user.Id,
                 Email = user.Email,
                 Phone = user.PhoneNumber,
-                UserName = user.UserName
+                UserName = user.UserName,
+                BirthDay = user.BirthDay,
+                City = user.City,
+                Picture = user.Picture,
+                Gender = (Gender)user.Gender
             };
+            ViewBag.Gender = new SelectList(Enum.GetNames(typeof(Gender)));
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditMember(EditMemberModel model)
+        public async Task<IActionResult> EditMember(EditMemberModel model, IFormFile userPicture)
         {
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByIdAsync(model.Id);
+
+                string userPhone = await _userManager.GetPhoneNumberAsync(user);
+                if (userPhone != model.Phone && _userManager.Users.Any(u => u.PhoneNumber == model.Phone))
+                {
+                    ModelState.AddModelError("", "Bu telefon numarası başka üye tarafından kullanılmaktadır.");
+                    return View(model);
+                }
+
+                if (userPicture?.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(userPicture.FileName);
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/user", fileName);
+
+                    using var stream = new FileStream(path, FileMode.Create);
+                    await userPicture.CopyToAsync(stream);
+                    user.Picture = "/images/user/" + fileName;
+                }
+
                 user.UserName = model.UserName;
                 user.PhoneNumber = model.Phone;
                 user.Email = model.Email;
+                user.City = model.City;
+                user.BirthDay = model.BirthDay;
+                user.Gender = (int)model.Gender;
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
@@ -119,6 +155,7 @@ namespace CoreMvcIdentity.Controllers
                     }
                 }
             }
+            ViewBag.Gender = new SelectList(Enum.GetNames(typeof(Gender)));
             return View(model);
         }
 

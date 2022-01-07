@@ -10,26 +10,41 @@
 <form>
     <div class="row g-3">
         <div class="col-sm-3 mt-5">
-            <img src="~/images/user/user-logo.png" style="width:70%;" />
+            <img src="@Model.Picture" style="width:70%;" />
         </div>
 
         <div class="col-sm-9">
             <div class="mb-3">
                 <label asp-for="UserName" class="form-label"></label>
-                <input type="text" asp-for="UserName" value="@Model.UserName" class="form-control" readonly />
+                <input type="text" asp-for="UserName" class="form-control" readonly />
             </div>
 
             <div class="mb-3">
                 <label asp-for="Email" class="form-label"></label>
-                <input type="text" asp-for="Email" value="@Model.Email" class="form-control" readonly />
+                <input type="text" asp-for="Email" class="form-control" readonly />
             </div>
 
             <div class="mb-3">
                 <label asp-for="Phone" class="form-label"></label>
-                <input type="text" asp-for="Phone" value="@Model.Phone" class="form-control" readonly />
+                <input type="text" asp-for="Phone" class="form-control" readonly />
             </div>
-        </div>
 
+            <div class="mb-3">
+                <label asp-for="City" class="form-label"></label>
+                <input type="text" asp-for="City" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BirthDay" class="form-label"></label>
+                <input type="text" asp-for="BirthDay" class="form-control" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Gender" class="form-label"></label>
+                <input type="text" asp-for="Gender" class="form-control" readonly />
+            </div>
+
+        </div>
     </div>
 
 </form>
