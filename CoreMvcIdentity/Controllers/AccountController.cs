@@ -2,6 +2,7 @@
 using CoreMvcIdentity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -38,16 +39,39 @@ namespace CoreMvcIdentity.Controllers
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
+                    if (await _userManager.IsLockedOutAsync(user))
+                    {
+                        ModelState.AddModelError("", "Çok fazla yanlış giriş denemesi yaptığınız için hesabınız bir süreliğine kitlenmiştir.");
+                        return View(model);
+                    }
+
                     var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
                     if (result.Succeeded)
                     {
+                        //giriş sayısını sıfırla
+                        await _userManager.ResetAccessFailedCountAsync(user);
+
                         return TempData["returnUrl"] != null
                             ? Redirect(TempData["returnUrl"].ToString())
                             : RedirectToAction("Index", "Home");
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Kullanıcı Adı veyay Şifre hatalıdır.");
+                        //giriş sayısını +1
+                        await _userManager.AccessFailedAsync(user);
+
+                        //kac kes yanlış girdi.
+                        int failedCount = await _userManager.GetAccessFailedCountAsync(user);
+                        ModelState.AddModelError("", $"{failedCount} kez başarsız giriş denemesi yaptınız.");
+                        if (failedCount > 3)
+                        {
+                            await _userManager.SetLockoutEndDateAsync(user, new DateTimeOffset(DateTime.Now.AddMinutes(60)));
+                            ModelState.AddModelError("", "Hesabınız 4 kez başarısız giriş denemesi yaptığınız için 60 dakika süre ile kilitlenmiştir.");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Kullanıcı Adı veyay Şifre hatalıdır.");
+                        }
                     }
                 }
                 else
