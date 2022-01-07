@@ -13,7 +13,7 @@ namespace CoreMvcIdentity.Models
         [Display(Name = "E-posta Adresi")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Şifre alanı alandır")]
+        [Required(ErrorMessage = "Şifre zorunlu alandır")]
         [Display(Name = "Şifre")]
         [DataType(DataType.Password)]
         public string Password { get; set; }

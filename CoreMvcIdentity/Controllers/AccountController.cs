@@ -10,8 +10,8 @@ namespace CoreMvcIdentity.Controllers
 {
     public class AccountController : Controller
     {
-        private UserManager<AppUser> _userManager;
-        private SignInManager<AppUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
         public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
@@ -117,6 +117,83 @@ namespace CoreMvcIdentity.Controllers
         public IActionResult Logout()
         {
             return View();
+        }
+
+        public IActionResult ForgatPassword()
+        {
+            return View(new ForgatPasswordModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgatPassword(ForgatPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                var generatePasswordResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var generatePasswordResetLink = Url.Action("ResetPassword", "Account", new
+                {
+                    userId = user.Id,
+                    token = generatePasswordResetToken
+                }, HttpContext.Request.Scheme);
+
+                string bodyContent = $"<a href='{generatePasswordResetLink}'>Reset Password Link</a>";
+                try
+                {
+                    Helpers.Mail.Send(model.Email, "Şifre Sıfırlama", bodyContent);
+                    ModelState.AddModelError("", "Şifre sıfırlama linki kayıtlı e-posta adresine gönderildi.");
+                    return View(new ForgatPasswordModel());
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "E-posta gönderilemedi.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Kayıtlı e-posta adresi bulunamadı.");
+            }
+            return View(model);
+        }
+
+        public IActionResult ResetPassword([Bind("UserId", "Token")] ResetPasswordModel model)
+        {
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model, string mod)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId);
+                if (user != null)
+                {
+                    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.UpdateSecurityStampAsync(user);
+                        ModelState.AddModelError("", "Şifre değiştirme işleminiz başarılı bir şekilde tamamlandı.");
+                        return View(new ResetPasswordModel());
+                    }
+                    else
+                    {
+                        foreach (var item in result.Errors)
+                        {
+                            if (item.Code == "InvalidToken")
+                            {
+                                ModelState.AddModelError("", "Bu link ile daha önce şifre değiştirilmiştir.");
+                            }
+                            ModelState.AddModelError("", item.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Kullanıcı bulunamadı.");
+                }
+            }
+            return View(model);
         }
     }
 }
