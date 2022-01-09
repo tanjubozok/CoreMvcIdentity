@@ -164,5 +164,10 @@ namespace CoreMvcIdentity.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Profil");
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

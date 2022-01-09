@@ -3,7 +3,6 @@ using CoreMvcIdentity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoreMvcIdentity.Controllers
@@ -17,12 +16,6 @@ namespace CoreMvcIdentity.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-        }
-
-        public IActionResult UserList()
-        {
-            var userList = _userManager.Users.ToList();
-            return View(userList);
         }
 
         public IActionResult Login(string returnUrl)
@@ -111,11 +104,6 @@ namespace CoreMvcIdentity.Controllers
                 }
             }
             return View(model);
-        }
-
-        public IActionResult Logout()
-        {
-            return View();
         }
 
         public IActionResult ForgatPassword()

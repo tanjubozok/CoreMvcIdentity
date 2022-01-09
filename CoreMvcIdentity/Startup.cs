@@ -49,7 +49,7 @@ namespace CoreMvcIdentity
             {
                 options.LoginPath = "/Account/Login";
                 options.LogoutPath = "/Member/Logout";
-                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.AccessDeniedPath = "/Member/AccessDenied";
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromDays(1);
                 options.Cookie = new CookieBuilder
