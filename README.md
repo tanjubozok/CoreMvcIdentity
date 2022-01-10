@@ -14,6 +14,8 @@ Projede'ki paketler
 Proje İşlemleri
 ------------------------------------
 - Login
+- Access Failed Count
+- Lockout User
 - Register
 - Activation by E-Mail
 - Reset Password 
