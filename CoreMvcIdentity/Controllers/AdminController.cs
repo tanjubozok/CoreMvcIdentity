@@ -3,7 +3,8 @@ using CoreMvcIdentity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoreMvcIdentity.Controllers
@@ -153,6 +154,62 @@ namespace CoreMvcIdentity.Controllers
                 }
             }
             return View();
+        }
+
+        public async Task<IActionResult> RoleAssign(string id)
+        {
+            if (id == null)
+            {
+                ModelState.AddModelError("", "hata oluştu.");
+                return View();
+            }
+            else
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                var roles = _roleManager.Roles;
+                var userRole = await _userManager.GetRolesAsync(user);
+
+                List<RoleAssignModel> listModel = new();
+                foreach (var item in roles)
+                {
+                    RoleAssignModel model = new()
+                    {
+                        UserId = user.Id,
+                        UserName = user.UserName,
+                        RoleId = item.Id,
+                        RoleName = item.Name,
+                        Exist = userRole.Contains(item.Name)
+                    };
+                    listModel.Add(model);
+                }
+                return View(listModel);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RoleAssign(List<RoleAssignModel> listModel)
+        {
+            try
+            {
+                foreach (var item in listModel)
+                {
+                    var user = await _userManager.FindByIdAsync(item.UserId);
+                    if (item.Exist)
+                    {
+                        await _userManager.AddToRoleAsync(user, item.RoleName);
+                    }
+                    else
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, item.RoleName);
+                    }
+                }
+                return RedirectToAction("UserList");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(listModel);
+            }
         }
     }
 }

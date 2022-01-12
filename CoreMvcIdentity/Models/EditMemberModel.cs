@@ -1,7 +1,5 @@
 ﻿using CoreMvcIdentity.Enums;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
 
 namespace CoreMvcIdentity.Models
