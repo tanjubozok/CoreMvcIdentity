@@ -1,0 +1,34 @@
+﻿@model ConfirmationEmail
+
+@{
+    ViewData["Title"] = "ConfirmationEmail";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+}
+
+<h1>Confirmation Email</h1>
+<hr />
+
+<div class="row">
+
+    <div class="col-md-6 offset-md-3">
+
+        <div class="alert alert-@Model.Status" role="alert">
+            <h4 class="alert-heading">@Model.Status</h4>
+            <p>
+                @Model.Message
+            </p>
+            <hr>
+            <p class="mb-0">
+                @if (Model.Status == "success")
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-dark">Giriş Yap</a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="ReplaceConfirmationEmail" class="btn btn-danger">Tekrar Onaylama Email Gönder</a>
+                }
+            </p>
+        </div>
+
+    </div>
+</div>

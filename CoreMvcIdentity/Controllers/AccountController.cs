@@ -37,6 +37,11 @@ namespace CoreMvcIdentity.Controllers
                         ModelState.AddModelError("", "Çok fazla yanlış giriş denemesi yaptığınız için hesabınız bir süreliğine kitlenmiştir.");
                         return View(model);
                     }
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError("", "Email adresiniz onaylanmamıştır. Lütfen eposta adresini kontrol ediniz.");
+                        return View(model);
+                    }
 
                     var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
                     if (result.Succeeded)
@@ -93,6 +98,17 @@ namespace CoreMvcIdentity.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    string emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    string urlLink = Url.Action("ConfirmationEmail", "Account", new
+                    {
+                        userId = user.Id,
+                        token = emailConfirmationToken
+                    }, protocol: HttpContext.Request.Scheme);
+
+                    string bodyContent = $"<a href='{urlLink}'>Kayıt Onay Link</a>";
+
+                    Helpers.Mail.Send(user.Email, "Kayıt Onay", bodyContent);
+
                     return RedirectToAction("Login");
                 }
                 else
@@ -179,6 +195,81 @@ namespace CoreMvcIdentity.Controllers
                 {
                     ModelState.AddModelError("", "Kullanıcı bulunamadı.");
                 }
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> ConfirmationEmail(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if (result.Succeeded)
+                {
+                    var model = new ConfirmationEmail
+                    {
+                        Message = "Doğrulama işlemi başarılı oldu.",
+                        Status = "success",
+                        EmailAddress = user.Email
+                    };
+                    return View(model);
+                }
+                else
+                {
+                    var model = new ConfirmationEmail
+                    {
+                        Message = "Doğrulama işlemi başarısız oldu.",
+                        Status = "warning",
+                        EmailAddress = user.Email
+                    };
+                    return View(model);
+                }
+            }
+            else
+            {
+                var model = new ConfirmationEmail
+                {
+                    Message = "Kullanıcı bulunamadı.",
+                    Status = "danger",
+                    EmailAddress = user.Email == "" ? "" : user.Email
+                }; return View(model);
+            }
+        }
+
+        public IActionResult ReplaceConfirmationEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReplaceConfirmationEmail(ConfirmationEmail model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.EmailAddress);
+                if (user != null)
+                {
+                    string emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    string urlLink = Url.Action("ConfirmationEmail", "Account", new
+                    {
+                        userId = user.Id,
+                        token = emailConfirmationToken
+                    }, protocol: HttpContext.Request.Scheme);
+
+                    string bodyContent = $"<a href='{urlLink}'>Kayıt Onay Link</a>";
+                    Helpers.Mail.Send(user.Email, "Kayıt Onay", bodyContent);
+
+                    ModelState.AddModelError("", "E-Posta adresinize onaylama linki başarılı bir şekilde gönderildi.");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Kayıtlı bir e-posta adresi bulunamadı.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError(model.EmailAddress, "Email alanı zorunlu alandır.");
             }
             return View(model);
         }

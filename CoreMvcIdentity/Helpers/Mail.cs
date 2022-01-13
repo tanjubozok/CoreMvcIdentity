@@ -26,9 +26,8 @@ namespace CoreMvcIdentity.Helpers
                 mail.Body = body;
                 smtp.Send(mail);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw;
             }
         }
     }
