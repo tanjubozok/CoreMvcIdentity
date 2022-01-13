@@ -23,4 +23,5 @@ Proje İşlemleri
 - Forgat by E-Mail
 - Identity CRUD
 - Role CRUD
+- Assigning a Role to aUser
 
