@@ -16,27 +16,22 @@
 
             <div class="mb-3">
                 <label asp-for="UserName" class="form-label"></label>
-                <input type="text" asp-for="UserName" value="@Model.UserName" class="form-control" placeholder="Kullanıcı Adı" required/>
+                <input type="text" asp-for="UserName" class="form-control" placeholder="Kullanıcı Adı" required />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
-
             <div class="mb-3">
                 <label asp-for="Email" class="form-label"></label>
-                <input type="text" asp-for="Email" value="@Model.Email" class="form-control" placeholder="E-posta Adresi" required/>
+                <input type="email" asp-for="Email" class="form-control" placeholder="E-posta Adresi" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-
-
             <div class="mb-3">
                 <label asp-for="Phone" class="form-label"></label>
-                <input type="text" asp-for="Phone" value="@Model.Phone" class="form-control" placeholder="Telefon NUmarası" />
+                <input type="text" asp-for="Phone" class="form-control" placeholder="Telefon NUmarası" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
-
-
             <div class="mb-3">
                 <label asp-for="Password" class="form-label"></label>
-                <input type="password" asp-for="Password" value="@Model.Password" class="form-control" placeholder="Şifre" required/>
+                <input type="password" asp-for="Password" class="form-control" placeholder="Şifre" required />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 

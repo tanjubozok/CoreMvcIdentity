@@ -21,7 +21,7 @@ namespace CoreMvcIdentity.Controllers
         public IActionResult Login(string returnUrl)
         {
             TempData["returnUrl"] = returnUrl;
-            return View(new LoginModel());
+            return View();
         }
 
         [HttpPost]
@@ -81,7 +81,7 @@ namespace CoreMvcIdentity.Controllers
 
         public IActionResult Register()
         {
-            return View(new RegisterModel());
+            return View();
         }
 
         [HttpPost]
@@ -124,7 +124,7 @@ namespace CoreMvcIdentity.Controllers
 
         public IActionResult ForgatPassword()
         {
-            return View(new ForgatPasswordModel());
+            return View();
         }
 
         [HttpPost]

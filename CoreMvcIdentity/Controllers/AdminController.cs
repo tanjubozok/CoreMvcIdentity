@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CoreMvcIdentity.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class AdminController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
