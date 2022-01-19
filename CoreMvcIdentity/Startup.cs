@@ -1,5 +1,6 @@
-using CoreMvcIdentity.CustomValidations;
+ï»¿using CoreMvcIdentity.CustomValidations;
 using CoreMvcIdentity.Identity;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace CoreMvcIdentity
@@ -25,13 +27,24 @@ namespace CoreMvcIdentity
         {
             services.AddDbContext<AppIdentityDbContext>(option => option.UseSqlServer(Configuration["ConnectionStrings:IdentityConnection"]));
 
+            services.AddAuthentication()
+                .AddFacebook(facebookOptions =>
+                {
+                    facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                    facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                    facebookOptions.AccessDeniedPath = "/Account/AccessDeniedPathInfo";
+                })
+                .AddGoogle(googleOptions =>
+                {
+                    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                });
+
             services.AddIdentity<AppUser, AppRole>(options =>
             {
-                // username
                 options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "abcçdefgðhýijklmnoöpqrsþtuüvwxyzABCÇDEFGHIÝJKLMNOÖPQRSÞTUÜVWXYZ0123456789-._";
+                options.User.AllowedUserNameCharacters = "abcÃ§defgÄŸhÄ±ijklmnoÃ¶pqrsÅŸtuÃ¼vwxyzABCÃ‡DEFGHIÄ°JKLMNOÃ–PQRSÅžTUÃœVWXYZ0123456789-._";
 
-                //password
                 options.Password.RequiredLength = 4;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
@@ -44,7 +57,6 @@ namespace CoreMvcIdentity
               .AddEntityFrameworkStores<AppIdentityDbContext>()
               .AddDefaultTokenProviders();
 
-            // Cookie
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/Login";
