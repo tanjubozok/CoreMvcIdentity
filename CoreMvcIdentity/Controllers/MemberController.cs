@@ -27,22 +27,29 @@ namespace CoreMvcIdentity.Controllers
 
         public async Task<IActionResult> Profil()
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            if (user != null)
+            try
             {
-                var model = new ProfilModel
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                if (user != null)
                 {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Phone = user.PhoneNumber,
-                    BirthDay = user.BirthDay,
-                    City = user.City,
-                    Picture = user.Picture,
-                    Gender = (Gender)user.Gender
-                };
-                return View(model);
+                    var model = new ProfilModel
+                    {
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        Phone = user.PhoneNumber,
+                        BirthDay = user.BirthDay,
+                        City = user.City,
+                        Picture = user.Picture,
+                        Gender = (Gender)user.Gender
+                    };
+                    return View(model);
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
-            else
+            catch (Exception)
             {
                 return RedirectToAction("Index", "Home");
             }

@@ -1,6 +1,5 @@
 ﻿using CoreMvcIdentity.CustomValidations;
 using CoreMvcIdentity.Identity;
-using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using System;
 
 namespace CoreMvcIdentity
@@ -38,6 +36,7 @@ namespace CoreMvcIdentity
                 {
                     googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
                     googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                    googleOptions.AccessDeniedPath = "/Account/AccessDeniedPathInfo";
                 });
 
             services.AddIdentity<AppUser, AppRole>(options =>

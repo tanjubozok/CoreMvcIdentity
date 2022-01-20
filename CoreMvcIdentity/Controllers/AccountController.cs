@@ -291,11 +291,6 @@ namespace CoreMvcIdentity.Controllers
             return new ChallengeResult("Google", properties);
         }
 
-        public IActionResult AccessDeniedPathInfo()
-        {
-            return RedirectToAction("Login");
-        }
-
         public async Task<IActionResult> ExternalResponse(string ReturnUrl = "/Member/Profil")
         {
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
@@ -371,6 +366,11 @@ namespace CoreMvcIdentity.Controllers
         public ActionResult Error()
         {
             return View();
+        }
+
+        public IActionResult AccessDeniedPathInfo()
+        {
+            return RedirectToAction("Login");
         }
     }
 }
