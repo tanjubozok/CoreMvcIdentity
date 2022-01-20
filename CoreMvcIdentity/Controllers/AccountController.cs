@@ -98,6 +98,14 @@ namespace CoreMvcIdentity.Controllers
                     PhoneNumber = model.Phone != "" ? model.Phone : "",
                     Email = model.Email
                 };
+
+                string userPhone = await _userManager.GetPhoneNumberAsync(user);
+                if (userPhone != model.Phone && _userManager.Users.Any(u => u.PhoneNumber == model.Phone))
+                {
+                    ModelState.AddModelError("", "Bu telefon numarası başka üye tarafından kullanılmaktadır.");
+                    return View(model);
+                }
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

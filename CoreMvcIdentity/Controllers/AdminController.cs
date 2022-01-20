@@ -33,6 +33,40 @@ namespace CoreMvcIdentity.Controllers
             return View(userList);
         }
 
+        public async Task<IActionResult> UserResetPassword(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            var model = new ResetPasswordByAdminReset
+            {
+                UserId = user.Id
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UserResetPassword(ResetPasswordByAdminReset model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId);
+                string token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    await _userManager.UpdateSecurityStampAsync(user);
+                    return RedirectToAction("UserList");
+                }
+                else
+                {
+                    foreach (var item in result.Errors)
+                    {
+                        ModelState.AddModelError("", item.Description);
+                    }
+                }
+            }
+            return View(model);
+        }
+
         public async Task<IActionResult> Roles()
         {
             var roles = await _roleManager.Roles.ToListAsync();

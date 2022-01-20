@@ -19,6 +19,7 @@
                     <th scope="col">Email</th>
                     <th scope="col">Roller</th>
                     <th scope="col">Rol Atama</th>
+                    <th scope="col">Şifre Değiştir</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,6 +32,9 @@
                         <td user-roles="@item.Id"></td>
                         <td>
                             <a class="btn btn-success" asp-controller="Admin" asp-action="RoleAssign" asp-route-id="@item.Id">Rol Ekle</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-primary" asp-controller="Admin" asp-action="UserResetPassword" asp-route-id="@item.Id">Şifre Değiştir</a>
                         </td>
                     </tr>
                 }
