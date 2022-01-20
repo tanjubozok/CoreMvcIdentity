@@ -8,8 +8,6 @@ Projede'ki paketler
 - AspNetCore.Identity
 - AspNetCore Authentication Facebook
 - AspNetCore Authentication Google
-- AspNetCore Authentication Microsoft
-
 
 Proje İşlemleri
 ------------------------------------
@@ -24,4 +22,5 @@ Proje İşlemleri
 - Identity CRUD
 - Role CRUD
 - Assigning a Role to aUser
+- Admin reset password
 
