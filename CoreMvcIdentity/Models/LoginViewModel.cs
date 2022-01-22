@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class LoginModel
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "E-posta zorunlu alandır")]
         [EmailAddress(ErrorMessage = "Geçersiz e-posta adresi")]

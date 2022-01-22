@@ -1,6 +1,7 @@
 ﻿using CoreMvcIdentity.Enums;
 using CoreMvcIdentity.Identity;
 using CoreMvcIdentity.Models;
+using CoreMvcIdentity.TwoFactorServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,11 +19,13 @@ namespace CoreMvcIdentity.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly TwoFactorService _twoFactorService;
 
-        public MemberController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public MemberController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, TwoFactorService twoFactorService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _twoFactorService = twoFactorService;
         }
 
         public async Task<IActionResult> Profil()
@@ -32,7 +35,7 @@ namespace CoreMvcIdentity.Controllers
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 if (user != null)
                 {
-                    var model = new ProfilModel
+                    var model = new ProfilViewModel
                     {
                         UserName = user.UserName,
                         Email = user.Email,
@@ -61,7 +64,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditPassword(EditPasswordModel model)
+        public async Task<IActionResult> EditPassword(EditPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -73,7 +76,6 @@ namespace CoreMvcIdentity.Controllers
                     if (result.Succeeded)
                     {
                         await _userManager.UpdateSecurityStampAsync(user);
-
                         await _signInManager.SignOutAsync();
                         await _signInManager.PasswordSignInAsync(user, model.NewPassword, false, false);
 
@@ -99,7 +101,7 @@ namespace CoreMvcIdentity.Controllers
         public async Task<IActionResult> EditMember()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var model = new EditMemberModel()
+            var model = new EditMemberViewModel()
             {
                 Id = user.Id,
                 Email = user.Email,
@@ -115,7 +117,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditMember(EditMemberModel model, IFormFile userPicture)
+        public async Task<IActionResult> EditMember(EditMemberViewModel model, IFormFile userPicture)
         {
             if (ModelState.IsValid)
             {
@@ -175,6 +177,93 @@ namespace CoreMvcIdentity.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        public async Task<IActionResult> TwoFactorAuth(AuthenticatorViewModel model)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            if (string.IsNullOrEmpty(model.VerifyTwoFactorTokenUpdateMessage))
+            {
+                var baseModel = new AuthenticatorViewModel
+                {
+                    TwoFactorType = (TwoFactor)user.TwoFactor,
+                    TwoFactorTypeUpdateMessage = null
+                };
+                return View(baseModel);
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TwoFactorAuth(AuthenticatorViewModel model, bool empty)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            switch (model.TwoFactorType)
+            {
+                case TwoFactor.None:
+                    user.TwoFactorEnabled = false;
+                    user.TwoFactor = (sbyte)TwoFactor.None;
+                    model.TwoFactorTypeUpdateMessage = "İki adımlı kimlik doğruluma tipiniz  <b>'Hiçbiri'</b> olarak seçilmiştir.";
+                    break;
+                case TwoFactor.Phone:
+                    break;
+                case TwoFactor.Email:
+                    break;
+                case TwoFactor.MicrosoftGoogle:
+                    return RedirectToAction("TwoFactorWithAuthenticator");
+                default:
+                    break;
+            }
+            await _userManager.UpdateAsync(user);
+            return View(model);
+        }
+
+        public async Task<IActionResult> TwoFactorWithAuthenticator()
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            string getAuthenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            if (string.IsNullOrEmpty(getAuthenticatorKey))
+            {
+                await _userManager.ResetAuthenticatorKeyAsync(user);
+                getAuthenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            }
+            AuthenticatorViewModel model = new()
+            {
+                SharedKey = getAuthenticatorKey,
+                AuthenticatorUri = _twoFactorService.GenerateQrCodeUri(user.Email, getAuthenticatorKey)
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> TwoFactorWithAuthenticator(AuthenticatorViewModel model)
+        {
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var verificationCode = model.VerificationCode.Replace(" ", string.Empty).Replace("-", string.Empty);
+            var verifyTwoFactorToken = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
+
+            if (verifyTwoFactorToken)
+            {
+                user.TwoFactorEnabled = true;
+                user.TwoFactor = (sbyte)TwoFactor.MicrosoftGoogle;
+
+                var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 5);
+
+                model.VerifyTwoFactorTokenUpdateMessage = "İki adımlı kimlik doğrulama tipiniz Microsoft/Google Authenticator olarak belirlenmiştir.";
+                model.RecoveryCodes = recoveryCodes;
+                model.TwoFactorType = (TwoFactor)user.TwoFactor;
+
+                return RedirectToAction("TwoFactorAuth", model);
+            }
+            else
+            {
+                ModelState.AddModelError("", "Girdiğiniz doğrulama kodu yanlıştır");
+                return View(model);
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class RoleModel
+    public class RoleViewModel
     {
         public string Id { get; set; }
 

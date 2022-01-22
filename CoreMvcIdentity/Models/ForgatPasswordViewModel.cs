@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class ForgatPasswordModel
+    public class ForgatPasswordViewModel
     {
         [Required(ErrorMessage = "E-posta alanı alandır")]
         [EmailAddress(ErrorMessage = "Geçersiz e-posta adresi")]

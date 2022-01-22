@@ -1,0 +1,58 @@
+﻿@model AuthenticatorViewModel
+
+@{
+    ViewData["Title"] = "İki Adımla Doğrulama";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+<h1 class="mt-3">İki Adımla Doğrulama</h1>
+<hr />
+<div class="row">
+
+    <form asp-controller="Member" asp-action="TwoFactorAuth" method="post">
+
+        <div class="mb-3">
+            <label asp-for="TwoFactorType" class="form-label"></label>
+            <select class="form-select" asp-for="TwoFactorType" asp-items="Html.GetEnumSelectList<TwoFactor>()"></select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+
+    @if (Model.TwoFactorTypeUpdateMessage != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show mb-col-3 mt-3" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+            @Html.Raw(Model.TwoFactorTypeUpdateMessage)
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.VerifyTwoFactorTokenUpdateMessage != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show mb-col-3 mt-3" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+            @Model.VerifyTwoFactorTokenUpdateMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.RecoveryCodes != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show mb-col-3" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+            Aşağıdaki kodları güvenli bir yerde saklayınız.Microsoft/Google Authenticator uygulamasını <b>kullanamadığınız</b> durumlarda bu kurtarma kodlarını kullanabilirsiniz.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show mb-col-3" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#info-fill" /></svg>
+            @foreach (var item in Model.RecoveryCodes)
+            {
+                <strong>@item</strong>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+</div>
+

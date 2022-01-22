@@ -36,7 +36,7 @@ namespace CoreMvcIdentity.Controllers
         public async Task<IActionResult> UserResetPassword(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            var model = new ResetPasswordByAdminReset
+            var model = new ResetPasswordByAdminResetViewModel
             {
                 UserId = user.Id
             };
@@ -44,7 +44,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UserResetPassword(ResetPasswordByAdminReset model)
+        public async Task<IActionResult> UserResetPassword(ResetPasswordByAdminResetViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RoleCreate(RoleModel model)
+        public async Task<IActionResult> RoleCreate(RoleViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -118,7 +118,7 @@ namespace CoreMvcIdentity.Controllers
                 var role = await _roleManager.FindByIdAsync(id);
                 if (role != null)
                 {
-                    var model = new RoleModel
+                    var model = new RoleViewModel
                     {
                         Id = role.Id,
                         Name = role.Name
@@ -130,7 +130,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RoleEdit(RoleModel model)
+        public async Task<IActionResult> RoleEdit(RoleViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -205,10 +205,10 @@ namespace CoreMvcIdentity.Controllers
                 var roles = _roleManager.Roles;
                 var userRole = await _userManager.GetRolesAsync(user);
 
-                List<RoleAssignModel> listModel = new();
+                List<RoleAssignViewModel> listModel = new();
                 foreach (var item in roles)
                 {
-                    RoleAssignModel model = new()
+                    RoleAssignViewModel model = new()
                     {
                         UserId = user.Id,
                         UserName = user.UserName,
@@ -223,7 +223,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RoleAssign(List<RoleAssignModel> listModel)
+        public async Task<IActionResult> RoleAssign(List<RoleAssignViewModel> listModel)
         {
             try
             {

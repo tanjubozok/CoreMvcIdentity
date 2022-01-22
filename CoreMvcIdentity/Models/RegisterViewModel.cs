@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class RegisterModel
+    public class RegisterViewModel
     {
         [Required(ErrorMessage = "Kullanıcı adı alanı alandır")]
         [Display(Name = "Kullanıcı Adı")]

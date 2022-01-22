@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class ResetPasswordModel
+    public class ResetPasswordViewModel
     {
         [Required(ErrorMessage = "Şifre zorunlu alandır.")]
         [Display(Name = "Şifre")]

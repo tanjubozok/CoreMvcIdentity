@@ -1,5 +1,6 @@
 ﻿using CoreMvcIdentity.CustomValidations;
 using CoreMvcIdentity.Identity;
+using CoreMvcIdentity.TwoFactorServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,8 @@ namespace CoreMvcIdentity
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<TwoFactorService>();
+
             services.AddDbContext<AppIdentityDbContext>(option => option.UseSqlServer(Configuration["ConnectionStrings:IdentityConnection"]));
 
             services.AddAuthentication()
@@ -79,6 +82,7 @@ namespace CoreMvcIdentity
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
             else
             {

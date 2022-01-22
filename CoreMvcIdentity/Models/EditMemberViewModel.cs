@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CoreMvcIdentity.Models
 {
-    public class EditMemberModel
+    public class EditMemberViewModel
     {
         public string Id { get; set; }
 

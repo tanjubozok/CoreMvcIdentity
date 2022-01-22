@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class ConfirmationEmail
+    public class ConfirmationEmailViewModel
     {
         [Required(ErrorMessage = "E-posta zorunlu alandır")]
         [EmailAddress(ErrorMessage = "Geçersiz e-posta adresi")]

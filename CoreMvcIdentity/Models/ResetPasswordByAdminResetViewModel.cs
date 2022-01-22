@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class ResetPasswordByAdminReset
+    public class ResetPasswordByAdminResetViewModel
     {
         public string UserId { get; set; }
 

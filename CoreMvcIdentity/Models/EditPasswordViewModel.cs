@@ -2,7 +2,7 @@
 
 namespace CoreMvcIdentity.Models
 {
-    public class EditPasswordModel
+    public class EditPasswordViewModel
     {
         [Required(ErrorMessage = "Kullanığın şifre zorunlu alandır")]
         [Display(Name = "Kullanığın Şifre")]

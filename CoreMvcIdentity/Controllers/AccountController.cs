@@ -28,7 +28,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +88,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -96,7 +96,8 @@ namespace CoreMvcIdentity.Controllers
                 {
                     UserName = model.UserName,
                     PhoneNumber = model.Phone != "" ? model.Phone : "",
-                    Email = model.Email
+                    Email = model.Email,
+                    TwoFactor = 0
                 };
 
                 string userPhone = await _userManager.GetPhoneNumberAsync(user);
@@ -117,7 +118,6 @@ namespace CoreMvcIdentity.Controllers
                     }, protocol: HttpContext.Request.Scheme);
 
                     string bodyContent = $"<a href='{urlLink}'>Kayıt Onay Link</a>";
-
                     Helpers.Mail.Send(user.Email, "Kayıt Onay", bodyContent);
 
                     return RedirectToAction("Login");
@@ -139,7 +139,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ForgatPassword(ForgatPasswordModel model)
+        public async Task<IActionResult> ForgatPassword(ForgatPasswordViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != null)
@@ -156,7 +156,7 @@ namespace CoreMvcIdentity.Controllers
                 {
                     Helpers.Mail.Send(model.Email, "Şifre Sıfırlama", bodyContent);
                     ModelState.AddModelError("", "Şifre sıfırlama linki kayıtlı e-posta adresine gönderildi.");
-                    return View(new ForgatPasswordModel());
+                    return View(new ForgatPasswordViewModel());
                 }
                 catch (Exception)
                 {
@@ -170,13 +170,13 @@ namespace CoreMvcIdentity.Controllers
             return View(model);
         }
 
-        public IActionResult ResetPassword([Bind("UserId", "Token")] ResetPasswordModel model)
+        public IActionResult ResetPassword([Bind("UserId", "Token")] ResetPasswordViewModel model)
         {
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordModel model, string mod)
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string mod)
         {
             if (ModelState.IsValid)
             {
@@ -188,7 +188,7 @@ namespace CoreMvcIdentity.Controllers
                     {
                         await _userManager.UpdateSecurityStampAsync(user);
                         ModelState.AddModelError("", "Şifre değiştirme işleminiz başarılı bir şekilde tamamlandı.");
-                        return View(new ResetPasswordModel());
+                        return View(new ResetPasswordViewModel());
                     }
                     else
                     {
@@ -218,7 +218,7 @@ namespace CoreMvcIdentity.Controllers
                 var result = await _userManager.ConfirmEmailAsync(user, token);
                 if (result.Succeeded)
                 {
-                    var model = new ConfirmationEmail
+                    var model = new ConfirmationEmailViewModel
                     {
                         Message = "Doğrulama işlemi başarılı oldu.",
                         Status = "success",
@@ -228,7 +228,7 @@ namespace CoreMvcIdentity.Controllers
                 }
                 else
                 {
-                    var model = new ConfirmationEmail
+                    var model = new ConfirmationEmailViewModel
                     {
                         Message = "Doğrulama işlemi başarısız oldu.",
                         Status = "warning",
@@ -239,7 +239,7 @@ namespace CoreMvcIdentity.Controllers
             }
             else
             {
-                var model = new ConfirmationEmail
+                var model = new ConfirmationEmailViewModel
                 {
                     Message = "Kullanıcı bulunamadı.",
                     Status = "danger",
@@ -254,7 +254,7 @@ namespace CoreMvcIdentity.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ReplaceConfirmationEmail(ConfirmationEmail model)
+        public async Task<IActionResult> ReplaceConfirmationEmail(ConfirmationEmailViewModel model)
         {
             if (ModelState.IsValid)
             {

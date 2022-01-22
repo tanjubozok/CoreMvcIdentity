@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CoreMvcIdentity.Models
 {
-    public class ProfilModel
+    public class ProfilViewModel
     {
         [Required(ErrorMessage = "Kullanıcı adı alanı alandır")]
         [Display(Name = "Kullanıcı Adı")]
